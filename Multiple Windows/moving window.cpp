@@ -28,11 +28,25 @@ namespace MovingWindow
 			BeginPaint(window,&ps);
 				GetClientRect(window,&clientArea);
 				SelectObject(ps.hdc,CreatePen(PS_SOLID,1,RGB(255,255,0)));
-					//MoveToEx(ps.hdc,0,0,NULL);
+				SetROP2(ps.hdc,R2_XORPEN);
 					LineTo(ps.hdc,0,clientArea.bottom-1);
 					LineTo(ps.hdc,clientArea.right-1,clientArea.bottom-1);
 					LineTo(ps.hdc,clientArea.right-1,0);
 					LineTo(ps.hdc,0,0);
+					MoveToEx(ps.hdc,0,clientArea.bottom>>1,NULL);
+					LineTo(ps.hdc,clientArea.right,clientArea.bottom>>1);
+					MoveToEx(ps.hdc,clientArea.right>>1,0,NULL);
+					LineTo(ps.hdc,clientArea.right>>1,clientArea.bottom);
+					{
+					POINT controlPoints[] = {{clientArea.right-1,clientArea.bottom>>1},
+												{clientArea.right-1,0},{clientArea.right-1,0},{clientArea.right>>1,0},
+												{0,0},{0,0},{0,clientArea.bottom>>1},
+												{0,clientArea.bottom-1},{0,clientArea.bottom-1},{clientArea.right>>1,clientArea.bottom-1},
+												{clientArea.right-1,clientArea.bottom-1},{clientArea.right-1,clientArea.bottom-1},
+																							{clientArea.right-1,clientArea.bottom>>1}
+											};
+					PolyBezier(ps.hdc,controlPoints,length(controlPoints));
+					}
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
 			EndPaint(window,&ps);
 			return 0;
