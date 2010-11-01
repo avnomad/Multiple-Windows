@@ -17,7 +17,7 @@ namespace MovingWindow
 	LRESULT CALLBACK messageHandler(HWND window,UINT message,WPARAM argW,LPARAM argL)
 	{
 		PAINTSTRUCT ps;
-		RECT clientArea;
+		RECT r;	// for client area
 
 		switch(message)
 		{
@@ -26,27 +26,36 @@ namespace MovingWindow
 			return 0;
 		case WM_PAINT:
 			BeginPaint(window,&ps);
-				GetClientRect(window,&clientArea);
+				GetClientRect(window,&r);
 				SelectObject(ps.hdc,CreatePen(PS_SOLID,1,RGB(255,255,0)));
 				SetROP2(ps.hdc,R2_XORPEN);
-					LineTo(ps.hdc,0,clientArea.bottom-1);
-					LineTo(ps.hdc,clientArea.right-1,clientArea.bottom-1);
-					LineTo(ps.hdc,clientArea.right-1,0);
+					LineTo(ps.hdc,0,r.bottom-1);
+					LineTo(ps.hdc,r.right-1,r.bottom-1);
+					LineTo(ps.hdc,r.right-1,0);
 					LineTo(ps.hdc,0,0);
-					MoveToEx(ps.hdc,0,clientArea.bottom>>1,NULL);
-					LineTo(ps.hdc,clientArea.right,clientArea.bottom>>1);
-					MoveToEx(ps.hdc,clientArea.right>>1,0,NULL);
-					LineTo(ps.hdc,clientArea.right>>1,clientArea.bottom);
+					MoveToEx(ps.hdc,0,r.bottom>>1,NULL);
+					LineTo(ps.hdc,r.right,r.bottom>>1);
+					MoveToEx(ps.hdc,r.right>>1,0,NULL);
+					LineTo(ps.hdc,r.right>>1,r.bottom);
 					{
-					POINT controlPoints[] = {{clientArea.right-1,clientArea.bottom>>1},
-												{clientArea.right-1,0},{clientArea.right-1,0},{clientArea.right>>1,0},
-												{0,0},{0,0},{0,clientArea.bottom>>1},
-												{0,clientArea.bottom-1},{0,clientArea.bottom-1},{clientArea.right>>1,clientArea.bottom-1},
-												{clientArea.right-1,clientArea.bottom-1},{clientArea.right-1,clientArea.bottom-1},
-																							{clientArea.right-1,clientArea.bottom>>1}
+					POINT controlPoints[] = {{r.right-1,r.bottom>>1},
+												{r.right-1,0},{r.right-1,0},{r.right>>1,0},
+												{0,0},{0,0},{0,r.bottom>>1},
+												{0,r.bottom-1},{0,r.bottom-1},{r.right>>1,r.bottom-1},
+												{r.right-1,r.bottom-1},{r.right-1,r.bottom-1},{r.right-1,r.bottom>>1}
 											};
 					PolyBezier(ps.hdc,controlPoints,length(controlPoints));
 					}
+				SetROP2(ps.hdc,R2_COPYPEN);
+				SelectObject(ps.hdc,CreateHatchBrush(HS_BDIAGONAL,RGB(192,192,192)));
+				SetBkColor(ps.hdc,RGB(64,64,64));
+				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
+					Ellipse(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8);
+				DeleteObject(SelectObject(ps.hdc,CreateHatchBrush(HS_FDIAGONAL,RGB(192,192,192))));
+					Chord(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8,r.right/3,0,0,r.bottom/3);
+				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_BRUSH)));
+				SelectObject(ps.hdc,CreatePen(PS_SOLID,2,RGB(0,32,0)));
+					Ellipse(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8);
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
 			EndPaint(window,&ps);
 			return 0;
