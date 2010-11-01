@@ -1,0 +1,8 @@
+syntax: regexp
+Release/*
+ipch/*
+Debug/*
+syntax: glob
+Multiple Windows.sdf
+Multiple Windows.suo
+Multiple Windows.opensdf
