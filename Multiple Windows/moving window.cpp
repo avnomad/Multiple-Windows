@@ -1,4 +1,5 @@
 #include "moving window.h"
+#include <tpcshrd.h>
 
 namespace MovingWindow
 {
@@ -28,6 +29,11 @@ namespace MovingWindow
 			InvalidateRect(window,NULL,FALSE);
 			UpdateWindow(window);
 			return 0;
+		case WM_GESTURENOTIFY:
+		case WM_GESTURE:
+		case WM_TABLET_FLICK:
+			PostQuitMessage(0);
+			return 1;
 		case WM_PAINT:
 			BeginPaint(window,&ps);
 				GetClientRect(window,&r);
