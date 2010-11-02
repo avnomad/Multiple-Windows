@@ -64,6 +64,24 @@ namespace MovingWindow
 				SelectObject(ps.hdc,CreatePen(PS_DASH,1,RGB(0,32,0)));
 					Ellipse(ps.hdc,60,60,90,90);
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
+				SetBkColor(ps.hdc,RGB(32,32,32));
+				SelectObject(ps.hdc,CreateHatchBrush(HS_CROSS,RGB(0,128,0)));
+					RoundRect(ps.hdc,5,95,45,55,10,10);
+				DeleteObject(SelectObject(ps.hdc,CreateHatchBrush(HS_HORIZONTAL,RGB(0,128,0))));
+					Pie(ps.hdc,10,90,40,60,40,50,0,75);
+				DeleteObject(SelectObject(ps.hdc,CreateHatchBrush(HS_DIAGCROSS,RGB(0,0,128))));
+					{
+						POINT vertices[] = {{15,10},{35,10},{35,30},{25,35},{15,30},{15,10}};
+						Polygon(ps.hdc,vertices,length(vertices));
+					}
+				DeleteObject(SelectObject(ps.hdc,GetStockObject(DKGRAY_BRUSH)));
+				SelectObject(ps.hdc,GetStockObject(WHITE_PEN));
+					SetRect(&r,55,35,70,25);
+					FillRect(ps.hdc,&r,(HBRUSH)GetStockObject(GRAY_BRUSH));
+					OffsetRect(&r,25,0);
+					FrameRect(ps.hdc,&r,(HBRUSH)GetStockObject(GRAY_BRUSH));	// doesn't seem to work
+					OffsetRect(&r,-15,-5);
+					InvertRect(ps.hdc,&r);
 			EndPaint(window,&ps);
 			return 0;
 		case WM_DESTROY:
