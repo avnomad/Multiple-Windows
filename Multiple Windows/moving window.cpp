@@ -24,12 +24,22 @@ namespace MovingWindow
 		case WM_CREATE:
 			++windowCounter;
 			return 0;
+		case WM_MOVE:
+			InvalidateRect(window,NULL,FALSE);
+			UpdateWindow(window);
+			return 0;
 		case WM_PAINT:
 			BeginPaint(window,&ps);
 				GetClientRect(window,&r);
+				FillRect(ps.hdc,&r,(HBRUSH)GetStockObject(BLACK_BRUSH));
+				r.left = r.top = 0;
+				ClientToScreen(window,(LPPOINT)&r.left);
+				r.right = GetDeviceCaps(ps.hdc,HORZRES);
+				r.bottom = GetDeviceCaps(ps.hdc,VERTRES);
+				SetViewportOrgEx(ps.hdc,-r.left,-r.top,NULL);
 				// draw lines and curves
 				SelectObject(ps.hdc,CreatePen(PS_SOLID,1,RGB(255,255,0)));
-				SetROP2(ps.hdc,R2_XORPEN);
+				//SetROP2(ps.hdc,R2_XORPEN);
 					LineTo(ps.hdc,0,r.bottom-1);
 					LineTo(ps.hdc,r.right-1,r.bottom-1);
 					LineTo(ps.hdc,r.right-1,0);
@@ -48,13 +58,13 @@ namespace MovingWindow
 					PolyBezier(ps.hdc,controlPoints,length(controlPoints));
 					}
 				// draw filled shapes
-				SetROP2(ps.hdc,R2_COPYPEN);
+				//SetROP2(ps.hdc,R2_COPYPEN);
 				SetBkColor(ps.hdc,RGB(64,64,64));
 				SetMapMode(ps.hdc,MM_ANISOTROPIC);
 				SetViewportExtEx(ps.hdc,r.right,-r.bottom,NULL);
 				SetWindowExtEx(ps.hdc,100,100,NULL);
+				SetViewportOrgEx(ps.hdc,-r.left,r.bottom-1-r.top,NULL);
 				SetWindowOrgEx(ps.hdc,0,0,NULL);
-				SetViewportOrgEx(ps.hdc,0,r.bottom-1,NULL);
 				SelectObject(ps.hdc,CreateHatchBrush(HS_BDIAGONAL,RGB(192,192,192)));
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
 					Ellipse(ps.hdc,60,60,90,90);
