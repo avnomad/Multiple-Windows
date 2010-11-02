@@ -27,6 +27,7 @@ namespace MovingWindow
 		case WM_PAINT:
 			BeginPaint(window,&ps);
 				GetClientRect(window,&r);
+				// draw lines and curves
 				SelectObject(ps.hdc,CreatePen(PS_SOLID,1,RGB(255,255,0)));
 				SetROP2(ps.hdc,R2_XORPEN);
 					LineTo(ps.hdc,0,r.bottom-1);
@@ -46,16 +47,22 @@ namespace MovingWindow
 											};
 					PolyBezier(ps.hdc,controlPoints,length(controlPoints));
 					}
+				// draw filled shapes
 				SetROP2(ps.hdc,R2_COPYPEN);
-				SelectObject(ps.hdc,CreateHatchBrush(HS_BDIAGONAL,RGB(192,192,192)));
 				SetBkColor(ps.hdc,RGB(64,64,64));
+				SetMapMode(ps.hdc,MM_ANISOTROPIC);
+				SetViewportExtEx(ps.hdc,r.right,-r.bottom,NULL);
+				SetWindowExtEx(ps.hdc,100,100,NULL);
+				SetWindowOrgEx(ps.hdc,0,0,NULL);
+				SetViewportOrgEx(ps.hdc,0,r.bottom-1,NULL);
+				SelectObject(ps.hdc,CreateHatchBrush(HS_BDIAGONAL,RGB(192,192,192)));
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
-					Ellipse(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8);
+					Ellipse(ps.hdc,60,60,90,90);
 				DeleteObject(SelectObject(ps.hdc,CreateHatchBrush(HS_FDIAGONAL,RGB(192,192,192))));
-					Chord(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8,r.right/3,0,0,r.bottom/3);
+					Chord(ps.hdc,60,60,90,90,50,60,90,100);
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_BRUSH)));
-				SelectObject(ps.hdc,CreatePen(PS_SOLID,2,RGB(0,32,0)));
-					Ellipse(ps.hdc,r.right/8,r.bottom/8,3*r.right/8,3*r.bottom/8);
+				SelectObject(ps.hdc,CreatePen(PS_DASH,1,RGB(0,32,0)));
+					Ellipse(ps.hdc,60,60,90,90);
 				DeleteObject(SelectObject(ps.hdc,GetStockObject(NULL_PEN)));
 			EndPaint(window,&ps);
 			return 0;
