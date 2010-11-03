@@ -2,6 +2,9 @@
 #include <GL/glew.h>
 #include "OpenGL window.h"
 
+extern HANDLE openglThreads[2];
+extern DWORD openglThreadIDs[length(openglThreads)];
+
 namespace OpenGLWindow
 {
 	WNDCLASS commonAttributes = {
@@ -32,6 +35,9 @@ namespace OpenGLWindow
 		case WM_ERASEBKGND:
 			return 1;
 		case WM_DESTROY:	// should stop the thread too...
+			for(int i = 0 ; i < length(openglThreads) ; ++i)
+				PostThreadMessage(openglThreadIDs[i],WM_USER+1,0,(LPARAM)window);	// should check if succeeds...
+													// should not call before recieving thead creates message queue...
 			if(--windowCounter == 0)
 				PostQuitMessage(0);
 			return 0;
@@ -39,12 +45,8 @@ namespace OpenGLWindow
 		return DefWindowProc(window,message,argW,argL);
 	} // end function messageHandler
 
-	DWORD WINAPI rerpetualPaint(int howToShow)	// should be a window with CS_OWNDC
+	DWORD WINAPI rerpetualPaint(HWND window)	// should be a window with CS_OWNDC
 	{
-		HWND window = CreateWindow(commonAttributes.lpszClassName,TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
-						CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,commonAttributes.hInstance,NULL);
-		ShowWindow(window,howToShow);
-
 		HDC deviceContext = GetDC(window);
 		PIXELFORMATDESCRIPTOR pixelFormatDescription = {0};
 
@@ -70,13 +72,8 @@ namespace OpenGLWindow
 		MSG message;
 		while(1)
 		{
-			if(PeekMessage(&message,NULL,0,0,PM_REMOVE))
-			{
-				if(message.message == WM_QUIT)
-					break;
-				TranslateMessage(&message);
-				DispatchMessage(&message);
-			} // end if
+			if(PeekMessage(&message,NULL,WM_USER+1,WM_USER+1,PM_REMOVE) && message.message == WM_USER+1 && (HWND)message.lParam == window)
+				break;
 			glClear(GL_COLOR_BUFFER_BIT);
 			GetClientRect(window,&r);
 			glViewport(0,0,r.right,r.bottom);
@@ -88,7 +85,6 @@ namespace OpenGLWindow
 
 			glRectf(-0.5,-0.5,0.5,0.5);
 
-			glFlush();
 			SwapBuffers(deviceContext);
 		} // end while(1)
 		wglMakeCurrent(NULL,NULL);
