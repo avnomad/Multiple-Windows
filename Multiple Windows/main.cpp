@@ -6,8 +6,7 @@ int windowCounter = 0;
 int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE notUsed, LPSTR commandLine, int howToShow)
 {
 	HWND movingWindows[2];
-	HWND openglWindows[2];
-	HANDLE openglThreads[length(openglWindows)];
+	HANDLE openglThreads[2];
 
 	// windows class registrations
 	RegisterClass(&MovingWindow::commonAttributes);
@@ -22,13 +21,9 @@ int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE notUsed, LPSTR commandLi
 		UpdateWindow(movingWindows[i]);
 	} // end for
 
-	for(int i = 0 ; i < length(openglWindows) ; ++i)
+	for(int i = 0 ; i < length(openglThreads) ; ++i)
 	{
-		openglWindows[i] = CreateWindow(esquape(OpenGLWindow::commonAttributes),TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
-								CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,currentInstance,NULL);
-		openglThreads[i] = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)OpenGLWindow::rerpetualPaint,openglWindows[i],0,NULL);
-		ShowWindow(openglWindows[i],howToShow);
-		UpdateWindow(openglWindows[i]);
+		openglThreads[i] = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)OpenGLWindow::rerpetualPaint,(void*)howToShow,0,NULL);
 	} // end for
 
 	// message loop

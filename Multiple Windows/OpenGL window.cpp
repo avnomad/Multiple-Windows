@@ -39,8 +39,12 @@ namespace OpenGLWindow
 		return DefWindowProc(window,message,argW,argL);
 	} // end function messageHandler
 
-	DWORD WINAPI rerpetualPaint(HWND window)	// should be a window with CS_OWNDC
+	DWORD WINAPI rerpetualPaint(int howToShow)	// should be a window with CS_OWNDC
 	{
+		HWND window = CreateWindow(commonAttributes.lpszClassName,TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
+						CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,commonAttributes.hInstance,NULL);
+		ShowWindow(window,howToShow);
+
 		HDC deviceContext = GetDC(window);
 		PIXELFORMATDESCRIPTOR pixelFormatDescription = {0};
 
@@ -63,8 +67,16 @@ namespace OpenGLWindow
 
 		double degAngle = 0;
 		RECT r;
+		MSG message;
 		while(1)
 		{
+			if(PeekMessage(&message,NULL,0,0,PM_REMOVE))
+			{
+				if(message.message == WM_QUIT)
+					break;
+				TranslateMessage(&message);
+				DispatchMessage(&message);
+			} // end if
 			glClear(GL_COLOR_BUFFER_BIT);
 			GetClientRect(window,&r);
 			glViewport(0,0,r.right,r.bottom);
@@ -76,6 +88,7 @@ namespace OpenGLWindow
 
 			glRectf(-0.5,-0.5,0.5,0.5);
 
+			glFlush();
 			SwapBuffers(deviceContext);
 		} // end while(1)
 		wglMakeCurrent(NULL,NULL);
