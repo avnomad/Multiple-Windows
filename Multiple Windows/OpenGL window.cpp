@@ -45,7 +45,7 @@ namespace OpenGLWindow
 		return DefWindowProc(window,message,argW,argL);
 	} // end function messageHandler
 
-	DWORD WINAPI rerpetualPaint(HWND window)	// should be a window with CS_OWNDC
+	DWORD WINAPI perpetualPaint(HWND window)	// should be a window with CS_OWNDC
 	{
 		HDC deviceContext = GetDC(window);
 		PIXELFORMATDESCRIPTOR pixelFormatDescription = {0};
