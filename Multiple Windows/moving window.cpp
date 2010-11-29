@@ -19,15 +19,45 @@ namespace MovingWindow
 	{
 		PAINTSTRUCT ps;
 		RECT r;	// for client area
+		static POINT clientAreaPosition;	// in screen physical coordinates
 
 		switch(message)
 		{
 		case WM_CREATE:
 			++windowCounter;
 			return 0;
-		case WM_MOVE:
-			InvalidateRect(window,NULL,FALSE);
+		//case WM_MOVE:
+			//InvalidateRect(window,NULL,FALSE);
+			//ScrollWindow(window,clientAreaPosition.x-(short)LOWORD(argL),clientAreaPosition.y-(short)HIWORD(argL),NULL,NULL);
+			//UpdateWindow(window);
+			//clientAreaPosition.x = (short)LOWORD(argL);
+			//clientAreaPosition.y = (short)HIWORD(argL);
+			//return 0;
+		//case WM_MOVING:				// prevent moving of the window!
+		//	((RECT*)argL)->left = 200;
+		//	((RECT*)argL)->top = 200;
+		//	((RECT*)argL)->right = 600;
+		//	((RECT*)argL)->bottom = 400;
+			//ScrollWindow(window,clientAreaPosition.x-((RECT*)argL)->left,clientAreaPosition.y-((RECT*)argL)->top,NULL,NULL);
+			//UpdateWindow(window);
+			//clientAreaPosition.x = ((RECT*)argL)->left;
+			//clientAreaPosition.y = ((RECT*)argL)->top;
+			//return TRUE;
+		case WM_WINDOWPOSCHANGED:
+			((WINDOWPOS*)argL)->flags |= SWP_NOCOPYBITS;
+			//ScrollWindow(window,clientAreaPosition.x-((WINDOWPOS*)argL)->x,clientAreaPosition.y-((WINDOWPOS*)argL)->y,NULL,NULL);
+			//InvalidateRect(window,NULL,FALSE);
 			UpdateWindow(window);
+			clientAreaPosition.x = ((WINDOWPOS*)argL)->x;
+			clientAreaPosition.y = ((WINDOWPOS*)argL)->y;
+			return 0;
+		case WM_WINDOWPOSCHANGING:
+			((WINDOWPOS*)argL)->flags |= SWP_NOCOPYBITS;
+			break;
+		case WM_ERASEBKGND:
+			return 1;
+		case WM_ENTERSIZEMOVE:
+		case WM_EXITSIZEMOVE:
 			return 0;
 		case WM_GESTURENOTIFY:
 		case WM_GESTURE:

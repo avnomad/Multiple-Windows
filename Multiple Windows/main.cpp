@@ -21,13 +21,13 @@ int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE notUsed, LPSTR commandLi
 		UpdateWindow(movingWindows[i]);
 	} // end for
 
-	for(int i = 0 ; i < length(openglWindows) ; ++i)
-	{
-		openglWindows[i] = CreateWindow(esquape(OpenGLWindow::commonAttributes),TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
-								CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,currentInstance,NULL);
-		ShowWindow(openglWindows[i],howToShow);
-		UpdateWindow(openglWindows[i]);
-	} // end for
+	//for(int i = 0 ; i < length(openglWindows) ; ++i)
+	//{
+	//	openglWindows[i] = CreateWindow(esquape(OpenGLWindow::commonAttributes),TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
+	//							CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,currentInstance,NULL);
+	//	ShowWindow(openglWindows[i],howToShow);
+	//	UpdateWindow(openglWindows[i]);
+	//} // end for
 
 	// message loop
 	MSG message;
