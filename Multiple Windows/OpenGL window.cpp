@@ -2,15 +2,12 @@
 #include <GL/glew.h>
 #include "OpenGL window.h"
 
-extern HANDLE openglThreads[2];
-extern DWORD openglThreadIDs[length(openglThreads)];
-
 namespace OpenGLWindow
 {
 	WNDCLASS commonAttributes = {
 		CS_OWNDC,
 		messageHandler,
-		0,0,
+		0,sizeof(HANDLE),
 		GetModuleHandle(NULL),	// messageHandler's maching code should be in this .exe file...
 		LoadIcon(NULL,IDI_APPLICATION),
 		LoadCursor(NULL,IDC_ARROW),
@@ -27,6 +24,11 @@ namespace OpenGLWindow
 		{
 		case WM_CREATE:
 			++windowCounter;
+			{
+				DWORD threadID;
+				CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)OpenGLWindow::perpetualPaint,window,0,&threadID);
+				SetWindowLongPtr(window,0,threadID);
+			} // end block
 			return 0;
 		case WM_PAINT:
 			BeginPaint(window,&ps);
@@ -34,10 +36,10 @@ namespace OpenGLWindow
 			return 0;
 		case WM_ERASEBKGND:
 			return 1;
-		case WM_DESTROY:	// should stop the thread too...
-			for(int i = 0 ; i < length(openglThreads) ; ++i)
-				PostThreadMessage(openglThreadIDs[i],WM_USER+1,0,(LPARAM)window);	// should check if succeeds...
+		case WM_DESTROY:
+			PostThreadMessage(GetWindowLongPtr(window,0),WM_USER+1,0,0);	// should check if succeeds...
 													// should not call before recieving thead creates message queue...
+													// should wait for thread to finish before returning?
 			if(--windowCounter == 0)
 				PostQuitMessage(0);
 			return 0;
@@ -72,7 +74,7 @@ namespace OpenGLWindow
 		MSG message;
 		while(1)
 		{
-			if(PeekMessage(&message,NULL,WM_USER+1,WM_USER+1,PM_REMOVE) && message.message == WM_USER+1 && (HWND)message.lParam == window)
+			if(PeekMessage(&message,(HWND)-1,WM_USER+1,WM_USER+1,PM_REMOVE) && message.message == WM_USER+1)
 				break;
 			glClear(GL_COLOR_BUFFER_BIT);
 			GetClientRect(window,&r);
@@ -89,7 +91,7 @@ namespace OpenGLWindow
 		} // end while(1)
 		wglMakeCurrent(NULL,NULL);
 		wglDeleteContext(renderingContext);
-		ReleaseDC(window,deviceContext);
+		//ReleaseDC(window,deviceContext);	documentation says it has no effect with CS_OWNDC...
 		return 0;
 	} // end function rerpetualPaint
 } // end namespace OpenGLWindow

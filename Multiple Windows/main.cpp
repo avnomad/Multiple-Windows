@@ -2,13 +2,11 @@
 #include "OpenGL window.h"
 
 int windowCounter = 0;
-HANDLE openglThreads[2];
-DWORD openglThreadIDs[length(openglThreads)];
 
 int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE notUsed, LPSTR commandLine, int howToShow)
 {
 	HWND movingWindows[2];
-	HWND openglWindows[length(openglThreads)];
+	HWND openglWindows[2];
 
 	// windows class registrations
 	RegisterClass(&MovingWindow::commonAttributes);
@@ -27,7 +25,6 @@ int WINAPI WinMain(HINSTANCE currentInstance, HINSTANCE notUsed, LPSTR commandLi
 	{
 		openglWindows[i] = CreateWindow(esquape(OpenGLWindow::commonAttributes),TEXT("OpenGL Window"),WS_OVERLAPPEDWINDOW,
 								CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,currentInstance,NULL);
-		openglThreads[i] = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)OpenGLWindow::perpetualPaint,openglWindows[i],0,&openglThreadIDs[i]);
 		ShowWindow(openglWindows[i],howToShow);
 		UpdateWindow(openglWindows[i]);
 	} // end for
