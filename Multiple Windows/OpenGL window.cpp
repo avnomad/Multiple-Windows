@@ -1,3 +1,21 @@
+//	Copyright (C) 2010, 2012 Vaptistis Anogeianakis <el05208@mail.ntua.gr>
+/*
+ *	This file is part of Multiple Windows.
+ *
+ *	Multiple Windows is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	Multiple Windows is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with Multiple Windows.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <iostream>
 #include <GL/glew.h>
 #include "OpenGL window.h"
@@ -38,7 +56,7 @@ namespace OpenGLWindow
 			return 1;
 		case WM_DESTROY:
 			PostThreadMessage(GetWindowLongPtr(window,0),WM_USER+1,0,0);	// should check if succeeds...
-													// should not call before recieving thead creates message queue...
+													// should not call before receiving thread creates message queue...
 													// should wait for thread to finish before returning?
 			if(--windowCounter == 0)
 				PostQuitMessage(0);
