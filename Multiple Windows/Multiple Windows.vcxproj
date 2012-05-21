@@ -73,6 +73,9 @@
     <ClInclude Include="moving window.h" />
     <ClInclude Include="OpenGL window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="design.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
